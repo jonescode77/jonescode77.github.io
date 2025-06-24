@@ -1,0 +1,241 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Advantage Account Inquiry</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+        .form-grid label {
+            font-weight: bold;
+            color: #003087;
+        }
+        .form-grid input, .form-grid select, .form-grid .file-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #003087;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .header img {
+            width: 100px;
+        }
+        .email-btn {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .email-btn button {
+            background-color: #003087;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        .email-btn button:hover {
+            background-color: #005bb5;
+        }
+        .email-btn svg {
+            margin-right: 8px;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            margin: 0;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .checkbox-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="header">
+            <h1 class="text-2xl font-bold">Service Advantage Account Inquiry</h1>
+            <img src="YOUR_LOGO_URL_HERE" alt="PepsiCo Logo">
+        </div>
+        <form id="serviceForm">
+            <div class="form-grid">
+                <label for="accountName">Account Name:</label>
+                <input type="text" id="accountName" name="accountName" required>
+
+                <label for="cofNumber">COF Number:</label>
+                <input type="text" id="cofNumber" name="cofNumber" required>
+
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" required>
+
+                <label for="contactName">Contact Name (Manager/Owner):</label>
+                <input type="text" id="contactName" name="contactName" required>
+
+                <label for="contactNumber">Contact Number:</label>
+                <input type="tel" id="contactNumber" name="contactNumber" required>
+
+                <label for="contactEmail">Contact Email:</label>
+                <input type="email" id="contactEmail" name="contactEmail" required>
+
+                <label for="equipmentCount">How many new pieces of equipment will we be servicing?:</label>
+                <input type="number" id="equipmentCount" name="equipmentCount" min="1" required>
+
+                <label>Equipment Type:</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="equipmentType" value="Ice machine"> Ice machine</label>
+                    <label><input type="checkbox" name="equipmentType" value="Cooler"> Cooler</label>
+                    <label><input type="checkbox" name="equipmentType" value="Fountain"> Fountain</label>
+                    <label><input type="checkbox" name="equipmentType" value="Vending"> Vending</label>
+                    <label><input type="checkbox" name="equipmentType" value="Frozen Beverage"> Frozen Beverage</label>
+                    <label><input type="checkbox" name="equipmentType" value="Other"> Other</label>
+                </div>
+
+                <label for="equipmentPhotos">Upload Photos of Equipment:</label>
+                <input type="file" id="equipmentPhotos" name="equipmentPhotos" accept="image/*" capture="camera" multiple class="file-input">
+
+                <label for="followUp">Does customer want a follow-up phone call to explain program details further?:</label>
+                <select id="followUp" name="followUp" required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+            <div class="email-btn">
+                <button type="button" onclick="sendEmail()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    Send Form via Email
+                </button>
+            </div>
+        </form>
+    </div>
+    <script>
+        function sendEmail() {
+            const form = document.getElementById('serviceForm');
+            const data = {
+                accountName: form.querySelector('#accountName').value,
+                cofNumber: form.querySelector('#cofNumber').value,
+                address: form.querySelector('#address').value,
+                contactName: form.querySelector('#contactName').value,
+                contactNumber: form.querySelector('#contactNumber').value,
+                contactEmail: form.querySelector('#contactEmail').value,
+                equipmentCount: form.querySelector('#equipmentCount').value,
+                followUp: form.querySelector('#followUp').value
+            };
+
+            const equipmentTypes = Array.from(form.querySelectorAll('input[name="equipmentType"]:checked'))
+                .map(cb => cb.value)
+                .join(', ') || 'None';
+
+            const photos = form.querySelector('#equipmentPhotos').files.length > 0 ? 'Photos attached' : 'No photos';
+
+            // Create text content for download
+            const textContent = `Account Name: ${data.accountName}\n` +
+                                `COF Number: ${data.cofNumber}\n` +
+                                `Address: ${data.address}\n` +
+                                `Contact Name: ${data.contactName}\n` +
+                                `Contact Number: ${data.contactNumber}\n` +
+                                `Contact Email: ${data.contactEmail}\n` +
+                                `Equipment Count: ${data.equipmentCount}\n` +
+                                `Equipment Type: ${equipmentTypes}\n` +
+                                `Equipment Photos: ${photos}\n` +
+                                `Follow-up Call: ${data.followUp}\n` +
+                                '\nPlease attach the selected photos manually.';
+
+            // Create and trigger download of text file
+            const blob = new Blob([textContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Service_Advantage_Inquiry.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            // Open email client with recipient and subject
+            const mailtoLink = `mailto:recipient@example.com?subject=Service Advantage Account Inquiry`;
+            window.location.href = mailtoLink;
+
+            alert('Form data has been downloaded as a text file. Please attach any photos and send the email.');
+        }
+    </script>
+</body>
+</html>
