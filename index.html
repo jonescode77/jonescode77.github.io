@@ -133,7 +133,7 @@
             <h1 class="text-2xl font-bold">Service Advantage Account Inquiry</h1>
             <img src="YOUR_LOGO_URL_HERE" alt="PepsiCo Logo">
         </div>
-        <form id="serviceForm">
+        <form action="https://formspree.io/f/xvgrwvp" method="POST" enctype="multipart/form-data">
             <div class="form-grid">
                 <label for="accountName">Account Name:</label>
                 <input type="text" id="accountName" name="accountName" required>
@@ -176,7 +176,7 @@
                 </select>
             </div>
             <div class="email-btn">
-                <button type="button" onclick="sendEmail()">
+                <button type="submit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                         <polyline points="22,6 12,13 2,6"></polyline>
@@ -187,55 +187,14 @@
         </form>
     </div>
     <script>
-        function sendEmail() {
-            const form = document.getElementById('serviceForm');
-            const data = {
-                accountName: form.querySelector('#accountName').value,
-                cofNumber: form.querySelector('#cofNumber').value,
-                address: form.querySelector('#address').value,
-                contactName: form.querySelector('#contactName').value,
-                contactNumber: form.querySelector('#contactNumber').value,
-                contactEmail: form.querySelector('#contactEmail').value,
-                equipmentCount: form.querySelector('#equipmentCount').value,
-                followUp: form.querySelector('#followUp').value
-            };
-
-            const equipmentTypes = Array.from(form.querySelectorAll('input[name="equipmentType"]:checked'))
-                .map(cb => cb.value)
-                .join(', ') || 'None';
-
-            const photos = form.querySelector('#equipmentPhotos').files.length > 0 ? 'Photos attached' : 'No photos';
-
-            // Create text content for download
-            const textContent = `Account Name: ${data.accountName}\n` +
-                                `COF Number: ${data.cofNumber}\n` +
-                                `Address: ${data.address}\n` +
-                                `Contact Name: ${data.contactName}\n` +
-                                `Contact Number: ${data.contactNumber}\n` +
-                                `Contact Email: ${data.contactEmail}\n` +
-                                `Equipment Count: ${data.equipmentCount}\n` +
-                                `Equipment Type: ${equipmentTypes}\n` +
-                                `Equipment Photos: ${photos}\n` +
-                                `Follow-up Call: ${data.followUp}\n` +
-                                '\nPlease attach the selected photos manually.';
-
-            // Create and trigger download of text file
-            const blob = new Blob([textContent], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Service_Advantage_Inquiry.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-
-            // Open email client with recipient and subject
-            const mailtoLink = `mailto:recipient@example.com?subject=Service Advantage Account Inquiry`;
-            window.location.href = mailtoLink;
-
-            alert('Form data has been downloaded as a text file. Please attach any photos and send the email.');
-        }
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const form = this;
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                alert('Please fill out all required fields.');
+                return;
+            }
+        });
     </script>
 </body>
 </html>
